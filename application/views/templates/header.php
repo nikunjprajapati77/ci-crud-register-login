@@ -4,18 +4,28 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     </head>
     <body>
-        <h1>Register Login & CRUD</h1>
-        <p>
-            <a href="<?php echo site_url('news'); ?>">Home</a> | 
-            <a href="<?php echo site_url('news/create'); ?>">Add News</a> | 
 
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">CI-Practical</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="<?php echo site_url('news'); ?>">Home</a></li>
+      <li><a href="<?php echo site_url('news/create'); ?>">Add News</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
             <?php
             if ($this->session->userdata('is_logged_in')) {
-                echo '<b>Logged in as:</b> ' . $this->session->userdata('email');
-                echo ' | ' . "<a href=" . site_url('user/logout') . ">Logout</a>";
+                ?>
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> <?= $this->session->userdata('email') ?></a></li>
+                <li><a href="<?php echo site_url('user/logout'); ?>"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+                <?php
             } else {
                 ?>    
-                <a href="<?php echo site_url('user/register'); ?>">Register</a> | 
-                <a href="<?php echo site_url('user/login'); ?>">Login</a>
-            <?php } ?>    
-        </p>
+                <li><a href="<?php echo site_url('user/register'); ?>"><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
+                <li><a href="<?php echo site_url('user/login'); ?>"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            <?php } ?>          
+    </ul>
+  </div>
+</nav>

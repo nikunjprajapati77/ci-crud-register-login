@@ -1,8 +1,10 @@
 <?php
 
-class News extends CI_Controller {
+class News extends CI_Controller
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->load->model('news_model');
         $this->load->helper('url_helper');
@@ -10,16 +12,65 @@ class News extends CI_Controller {
         $this->load->library('pagination');
     }
 
-    public function index() {
-        $data['news'] = $this->news_model->get_news();
+    public function index()
+    {
+        if (!$this->session->userdata('is_logged_in')) {
+            redirect(site_url('user/login'));
+        }
+        $data['news'] = [];
         $data['title'] = 'News archive';
+        $this->load->library('pagination');
+
+        $params = array();
+        $limit_per_page = 5;
+        $start_index = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+        $total_records = $this->news_model->get_total();
+
+        if ($total_records > 0) {
+            // get current page records
+            $data["news"] = $this->news_model->get_news($limit_per_page, $start_index);
+
+            $config['base_url'] = base_url('news/index');
+            $config['total_rows'] = $total_records;
+            $config['per_page'] = $limit_per_page;
+            $config["uri_segment"] = 3;
+
+            $config['full_tag_open'] = "<ul class='pagination'>";
+            $config['full_tag_close'] = '</ul>';
+            $config['num_tag_open'] = '<li>';
+            $config['num_tag_close'] = '</li>';
+            $config['cur_tag_open'] = '<li class="active"><a href="#">';
+            $config['cur_tag_close'] = '</a></li>';
+            $config['prev_tag_open'] = '<li>';
+            $config['prev_tag_close'] = '</li>';
+            $config['first_tag_open'] = '<li>';
+            $config['first_tag_close'] = '</li>';
+            $config['last_tag_open'] = '<li>';
+            $config['last_tag_close'] = '</li>';
+
+            $config['prev_link'] = '<i class="fa fa-long-arrow-left"></i>Previous Page';
+            $config['prev_tag_open'] = '<li>';
+            $config['prev_tag_close'] = '</li>';
+
+            $config['next_link'] = 'Next Page<i class="fa fa-long-arrow-right"></i>';
+            $config['next_tag_open'] = '<li>';
+            $config['next_tag_close'] = '</li>';
+
+            $this->pagination->initialize($config);
+
+            // build paging links
+            $data["links"] = $this->pagination->create_links();
+        }
+
+
 
         $this->load->view('templates/header', $data);
         $this->load->view('news/index', $data);
         $this->load->view('templates/footer');
     }
 
-    public function view($slug = NULL) {
+    public function view($slug = NULL)
+    {
         $data['news_item'] = $this->news_model->get_news($slug);
 
         if (empty($data['news_item'])) {
@@ -33,7 +84,8 @@ class News extends CI_Controller {
         $this->load->view('templates/footer');
     }
 
-    public function create() {
+    public function create()
+    {
         if (!$this->session->userdata('is_logged_in')) {
             redirect(site_url('user/login'));
         } else {
@@ -54,13 +106,12 @@ class News extends CI_Controller {
             $this->load->view('templates/footer');
         } else {
             $this->news_model->set_news();
-            $this->load->view('templates/header', $data);
-            $this->load->view('news/success');
-            $this->load->view('templates/footer');
+            redirect(base_url('news'));
         }
     }
 
-    public function edit() {
+    public function edit()
+    {
         if (!$this->session->userdata('is_logged_in')) {
             redirect(site_url('user/login'));
         } else {
@@ -99,7 +150,8 @@ class News extends CI_Controller {
         }
     }
 
-    public function delete() {
+    public function delete()
+    {
         if (!$this->session->userdata('is_logged_in')) {
             redirect(site_url('user/login'));
         }
@@ -120,5 +172,4 @@ class News extends CI_Controller {
         $this->news_model->delete_news($id);
         redirect(base_url('news'));
     }
-
 }

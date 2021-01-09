@@ -22,5 +22,5 @@
 <?php echo form_close(); ?>
 
 </div>
-<p style="color:green; font-style:bold"><?php echo $this->session->flashdata('msg_success'); ?></p>
-<p style="color:red; font-style:bold"><?php echo $this->session->flashdata('msg_error'); ?></p>
+<p class="text-success"><?php echo $this->session->flashdata('msg_success'); ?></p>
+<p class="text-danger"><?php echo $this->session->flashdata('msg_error'); ?></p>
